@@ -1,0 +1,129 @@
+#!/bin/bash
+
+# Helper script for AWS KMS Key Rotation Validation
+
+# Steps:
+# 1. Check AWS Config rule for KMS key rotation
+#    aws configservice describe-compliance-by-config-rule --config-rule-name "cmk-backing-key-rotation-enabled-conformance-pack-j3wepwlkw"
+#
+# 2. Get all KMS keys
+#    aws kms list-keys
+#
+# 3. For each KMS key, get:
+#    - Key details
+#    aws kms describe-key
+#    - Key rotation status
+#    aws kms get-key-rotation-status
+#    - Key policy
+#    aws kms get-key-policy
+#
+# Output: Creates JSON report with KMS key rotation status
+
+# Load environment and parse args
+source "$(dirname "$0")/../common/env_loader.sh" "$@"
+
+# Initialize counters
+total_keys=0
+rotated_keys=0
+
+# Get caller identity for metadata
+CALLER_IDENTITY=$(aws sts get-caller-identity --profile "$PROFILE" --output json 2>/dev/null || echo '{"Account":"unknown","Arn":"unknown"}')
+ACCOUNT_ID=$(echo "$CALLER_IDENTITY" | jq -r '.Account // "unknown"')
+ARN=$(echo "$CALLER_IDENTITY" | jq -r '.Arn // "unknown"')
+DATETIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+# Check AWS Config rule compliance
+config_rule_name="cmk-backing-key-rotation-enabled-conformance-pack-j3wepwlkw"
+config_compliance=$(aws configservice describe-compliance-by-config-rule \
+    --config-rule-name "$config_rule_name" \
+    --profile "$PROFILE" \
+    --region "$REGION" 2>/dev/null || echo '{"ComplianceByConfigRules": []}')
+
+# Get all KMS keys
+kms_results=()
+for key_id in $(aws kms list-keys --profile "$PROFILE" --region "$REGION" --query "Keys[*].KeyId" --output text 2>/dev/null || echo ""); do
+    if [ -z "$key_id" ]; then
+        continue
+    fi
+    
+    total_keys=$((total_keys + 1))
+    
+    # Get key details
+    key_details=$(aws kms describe-key --key-id "$key_id" --profile "$PROFILE" --region "$REGION" 2>/dev/null || echo '{"KeyMetadata": {}}')
+    key_rotation_status=$(aws kms get-key-rotation-status --key-id "$key_id" --profile "$PROFILE" --region "$REGION" 2>/dev/null || echo '{"KeyRotationEnabled": false}')
+    
+    # Extract key information
+    key_arn=$(echo "$key_details" | jq -r '.KeyMetadata.Arn // "Unknown"')
+    key_state=$(echo "$key_details" | jq -r '.KeyMetadata.KeyState // "Unknown"')
+    key_usage=$(echo "$key_details" | jq -r '.KeyMetadata.KeyUsage // "Unknown"')
+    is_rotated=$(echo "$key_rotation_status" | jq -r '.KeyRotationEnabled // false')
+    
+    if [ "$is_rotated" = "true" ]; then
+        rotated_keys=$((rotated_keys + 1))
+    fi
+    
+    # Get key policy
+    key_policy=$(aws kms get-key-policy --key-id "$key_id" --policy-name default --profile "$PROFILE" --region "$REGION" 2>/dev/null || echo "{}")
+    
+    kms_results+=("$(jq -n \
+        --arg id "$key_id" \
+        --arg arn "$key_arn" \
+        --arg state "$key_state" \
+        --arg usage "$key_usage" \
+        --argjson rotated "$is_rotated" \
+        --argjson policy "$key_policy" \
+        '{
+            key_id: $id,
+            key_arn: $arn,
+            key_state: $state,
+            key_usage: $usage,
+            rotation_enabled: $rotated,
+            key_policy: $policy
+        }')")
+done
+
+# Calculate percentage safely
+if [ "$total_keys" -eq 0 ]; then
+    percentage=0
+else
+    percentage=$(( (rotated_keys * 100) / total_keys ))
+fi
+
+# Combine results with metadata
+results_json=$(jq -n \
+    --arg profile "$PROFILE" \
+    --arg region "$REGION" \
+    --arg datetime "$DATETIME" \
+    --arg account_id "$ACCOUNT_ID" \
+    --arg arn "$ARN" \
+    --argjson keys "[$(IFS=,; echo "${kms_results[*]}")]" \
+    --argjson config "$config_compliance" \
+    --arg total "$total_keys" \
+    --arg rotated "$rotated_keys" \
+    --arg percentage "$percentage" \
+    '{
+        metadata: {
+            profile: $profile,
+            region: $region,
+            datetime: $datetime,
+            account_id: $account_id,
+            arn: $arn
+        },
+        results: {
+            kms_keys: {
+                object: $keys
+            },
+            config_rule: $config,
+            summary: {
+                total_keys: ($total | tonumber),
+                rotated_keys: ($rotated | tonumber),
+                rotation_percentage: ($percentage | tonumber)
+            }
+        }
+    }')
+
+# Write results to JSON file
+echo "$results_json" > "${OUTPUT_DIR}/kms_key_rotation.json"
+
+
+exit 0
