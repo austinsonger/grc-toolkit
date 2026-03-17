@@ -1,0 +1,21 @@
+title: AWS Root Login Detection
+id: DET-AWS-IAM-ROOT-001
+status: stable
+description: Detects AWS root account authentication events.
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventName: ConsoleLogin
+    userIdentity.type: Root
+  condition: selection
+falsepositives:
+  - Initial account setup
+level: high
+tags:
+  - control.CTRL-AU-001
+  - control.CTRL-AC-001
+  - nist.AU-6
+  - nist.AC-2
+  - soc2.CC7.2

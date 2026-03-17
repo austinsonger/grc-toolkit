@@ -1,0 +1,4 @@
+control_area,csp_responsibility,customer_responsibility
+Physical datacenter security,Maintain physical controls,None
+Hypervisor security,Patch and monitor hypervisor,None
+Instance OS hardening,None,Implement CIS baseline and patch schedule

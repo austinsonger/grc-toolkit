@@ -1,0 +1,11 @@
+baseline_id: BASELINE-MODERATE-001
+description: Moderate assurance baseline for SaaS workloads handling customer confidential data.
+included_controls:
+  - CTRL-AC-001
+  - CTRL-AU-001
+  - CTRL-CM-001
+  - CTRL-IR-001
+  - CTRL-CP-001
+  - CTRL-SC-001
+required_enhancements:
+  - ENH-AU-001

@@ -1,0 +1,102 @@
+version: "1.0.0"
+last_updated: "2026-03-17"
+controls:
+  - control_id: CTRL-AC-001
+    title: Account Provisioning and Deprovisioning
+    description: Access to systems is approved, provisioned, reviewed, and revoked based on role and business need.
+    domain: Access Control
+    risk_addressed:
+      - RISK-IAM-001
+      - RISK-PRIV-002
+    related_frameworks:
+      - framework: NIST SP 800-53 Rev.5
+        controls: ["AC-2", "AC-3"]
+      - framework: ISO/IEC 27001:2022
+        controls: ["A.5.15", "A.5.18"]
+      - framework: SOC 2 (TSC)
+        controls: ["CC6.1", "CC6.2"]
+      - framework: CIS Controls v8
+        controls: ["5.2", "6.1"]
+    evidence_examples:
+      - IAM role assignment reports
+      - Quarterly access recertification records
+
+  - control_id: CTRL-AU-001
+    title: Centralized Security Logging
+    description: Security-relevant events are logged, time-synchronized, centralized, retained, and protected from tampering.
+    domain: Audit and Accountability
+    risk_addressed:
+      - RISK-LOG-001
+      - RISK-IR-003
+    related_frameworks:
+      - framework: NIST SP 800-53 Rev.5
+        controls: ["AU-2", "AU-6", "AU-11", "AU-12"]
+      - framework: ISO/IEC 27001:2022
+        controls: ["A.8.15", "A.8.16"]
+      - framework: SOC 2 (TSC)
+        controls: ["CC7.2", "CC7.3"]
+      - framework: FedRAMP Rev.5
+        controls: ["AU-2", "AU-6", "AU-11", "AU-12"]
+    evidence_examples:
+      - CloudTrail and SIEM ingestion metrics
+      - Log retention configuration exports
+
+  - control_id: CTRL-CM-001
+    title: Configuration Baseline and Change Control
+    description: Approved secure baselines are enforced; configuration changes are authorized, tested, and tracked.
+    domain: Configuration Management
+    risk_addressed:
+      - RISK-CFG-001
+      - RISK-CHG-001
+    related_frameworks:
+      - framework: NIST SP 800-53 Rev.5
+        controls: ["CM-2", "CM-3", "CM-6"]
+      - framework: ISO/IEC 27001:2022
+        controls: ["A.8.9", "A.8.32"]
+      - framework: SOC 2 (TSC)
+        controls: ["CC8.1", "CC8.2"]
+
+  - control_id: CTRL-IR-001
+    title: Incident Response Lifecycle
+    description: Incidents are identified, triaged, contained, eradicated, recovered, and documented with lessons learned.
+    domain: Incident Response
+    risk_addressed:
+      - RISK-IR-001
+      - RISK-IR-002
+    related_frameworks:
+      - framework: NIST SP 800-53 Rev.5
+        controls: ["IR-4", "IR-5", "IR-6", "IR-8"]
+      - framework: ISO/IEC 27001:2022
+        controls: ["A.5.24", "A.5.25", "A.5.26"]
+      - framework: SOC 2 (TSC)
+        controls: ["CC7.4", "CC7.5"]
+
+  - control_id: CTRL-CP-001
+    title: Backup and Recovery Testing
+    description: Critical data backups are encrypted, immutable where feasible, and periodically tested for recovery objectives.
+    domain: Continuity Planning
+    risk_addressed:
+      - RISK-BCP-001
+      - RISK-RANSOM-001
+    related_frameworks:
+      - framework: NIST SP 800-53 Rev.5
+        controls: ["CP-9", "CP-10"]
+      - framework: ISO/IEC 27001:2022
+        controls: ["A.8.13", "A.5.30"]
+      - framework: SOC 2 (TSC)
+        controls: ["A1.2", "CC7.3"]
+
+  - control_id: CTRL-SC-001
+    title: Encryption in Transit and At Rest
+    description: Sensitive data is encrypted in transit and at rest using approved algorithms and key management standards.
+    domain: System and Communications Protection
+    risk_addressed:
+      - RISK-DATA-001
+      - RISK-KEY-001
+    related_frameworks:
+      - framework: NIST SP 800-53 Rev.5
+        controls: ["SC-8", "SC-12", "SC-13", "SC-28"]
+      - framework: ISO/IEC 27001:2022
+        controls: ["A.8.24"]
+      - framework: SOC 2 (TSC)
+        controls: ["CC6.7", "CC6.8"]

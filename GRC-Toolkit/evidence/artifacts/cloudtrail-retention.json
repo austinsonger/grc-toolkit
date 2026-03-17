@@ -1,0 +1,8 @@
+{
+  "trailName": "org-security-trail",
+  "isMultiRegionTrail": true,
+  "logFileValidationEnabled": true,
+  "s3BucketName": "sanitized-security-logs",
+  "retentionDays": 365,
+  "kmsKeyId": "arn:aws:kms:us-east-1:111122223333:key/00000000-1111-2222-3333-444444444444"
+}

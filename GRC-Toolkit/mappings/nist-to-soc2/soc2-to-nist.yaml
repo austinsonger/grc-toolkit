@@ -1,0 +1,19 @@
+version: "2026.03"
+source_framework: "SOC 2 TSC"
+target_framework: "NIST SP 800-53 Rev.5"
+mappings:
+  - mapping_id: MAP-S2N-CC61-001
+    source_control: "CC6.1"
+    target_control: "AC-2"
+    normalized_control_id: "CTRL-AC-001"
+    relationship: "equivalent"
+    rationale: "Both require provisioning and management of logical access rights."
+    confidence: "high"
+
+  - mapping_id: MAP-S2N-CC72-001
+    source_control: "CC7.2"
+    target_control: "AU-6"
+    normalized_control_id: "CTRL-AU-001"
+    relationship: "overlap"
+    rationale: "Both require monitoring and analysis of anomalies and security events."
+    confidence: "medium"

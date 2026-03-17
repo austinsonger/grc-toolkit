@@ -1,0 +1,6 @@
+risk_id,control_id,control_title,mitigation_type
+RISK-IAM-001,CTRL-AC-001,Account Provisioning and Deprovisioning,preventive
+RISK-LOG-001,CTRL-AU-001,Centralized Security Logging,detective
+RISK-LOG-001,CTRL-IR-001,Incident Response Lifecycle,corrective
+RISK-CFG-001,CTRL-CM-001,Configuration Baseline and Change Control,preventive
+RISK-DATA-001,CTRL-SC-001,Encryption in Transit and At Rest,preventive

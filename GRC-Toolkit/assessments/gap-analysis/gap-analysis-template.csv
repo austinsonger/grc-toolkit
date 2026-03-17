@@ -1,0 +1,4 @@
+control_id,control_title,current_state,target_state,gap,severity,owner,target_date
+CTRL-AC-001,Account Provisioning and Deprovisioning,Manual quarterly review,Automated joiner-mover-leaver workflow,No auto-deprovision for contractors,High,IAM Team,2026-06-30
+CTRL-AU-001,Centralized Security Logging,CloudTrail enabled in 70% accounts,100% org-wide logging with immutable retention,Missing org trail in 6 accounts,Critical,SecOps,2026-04-15
+CTRL-CM-001,Configuration Baseline and Change Control,Baselines documented only,Baselines enforced in IaC and drift detection,No drift alerting in production,High,Cloud Platform,2026-05-15

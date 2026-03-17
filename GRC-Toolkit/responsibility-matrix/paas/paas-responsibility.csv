@@ -1,0 +1,4 @@
+control_area,csp_responsibility,customer_responsibility
+Managed runtime patching,Patch managed services,Patch application dependencies
+Base network controls,Maintain platform perimeter,Define workload segmentation and ACLs
+Log service availability,Provide logging service,Configure log forwarding and alerting

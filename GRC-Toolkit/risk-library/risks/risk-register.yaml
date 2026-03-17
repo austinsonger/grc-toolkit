@@ -1,0 +1,97 @@
+version: "1.1"
+risks:
+  - risk_id: RISK-IAM-001
+    title: Unauthorized access due to stale accounts
+    description: Former users retain active credentials and can access sensitive systems.
+    likelihood: 3
+    impact: 5
+    inherent_risk_score: 15
+    mapped_controls: ["CTRL-AC-001"]
+
+  - risk_id: RISK-PRIV-002
+    title: Privilege misuse through standing admin access
+    description: Long-lived elevated privileges increase blast radius and abuse risk.
+    likelihood: 3
+    impact: 5
+    inherent_risk_score: 15
+    mapped_controls: ["CTRL-AC-001"]
+
+  - risk_id: RISK-LOG-001
+    title: Security event blindness
+    description: Incomplete or tampered logs prevent timely detection and investigation.
+    likelihood: 4
+    impact: 5
+    inherent_risk_score: 20
+    mapped_controls: ["CTRL-AU-001", "CTRL-IR-001"]
+
+  - risk_id: RISK-IR-003
+    title: Delayed incident containment
+    description: Missing telemetry and logging degrade incident containment speed.
+    likelihood: 3
+    impact: 4
+    inherent_risk_score: 12
+    mapped_controls: ["CTRL-AU-001", "CTRL-IR-001"]
+
+  - risk_id: RISK-CFG-001
+    title: Drift from secure baseline
+    description: Manual or untracked changes create exploitable misconfigurations.
+    likelihood: 4
+    impact: 4
+    inherent_risk_score: 16
+    mapped_controls: ["CTRL-CM-001"]
+
+  - risk_id: RISK-CHG-001
+    title: Unauthorized configuration change
+    description: Change processes fail to prevent unapproved production modifications.
+    likelihood: 3
+    impact: 4
+    inherent_risk_score: 12
+    mapped_controls: ["CTRL-CM-001"]
+
+  - risk_id: RISK-IR-001
+    title: Uncoordinated incident response
+    description: Incident handling lacks clearly defined triage and escalation ownership.
+    likelihood: 3
+    impact: 4
+    inherent_risk_score: 12
+    mapped_controls: ["CTRL-IR-001"]
+
+  - risk_id: RISK-IR-002
+    title: Recurring incidents due to weak post-incident learning
+    description: Corrective actions are not tracked to closure.
+    likelihood: 3
+    impact: 3
+    inherent_risk_score: 9
+    mapped_controls: ["CTRL-IR-001"]
+
+  - risk_id: RISK-BCP-001
+    title: Service outage exceeds recovery objectives
+    description: Recovery procedures are untested against RTO and RPO targets.
+    likelihood: 3
+    impact: 5
+    inherent_risk_score: 15
+    mapped_controls: ["CTRL-CP-001"]
+
+  - risk_id: RISK-RANSOM-001
+    title: Ransomware prevents data recovery
+    description: Backups are unavailable, compromised, or not restorable.
+    likelihood: 3
+    impact: 5
+    inherent_risk_score: 15
+    mapped_controls: ["CTRL-CP-001"]
+
+  - risk_id: RISK-DATA-001
+    title: Data exposure from weak cryptography
+    description: Sensitive data is exposed due to missing or outdated encryption controls.
+    likelihood: 3
+    impact: 5
+    inherent_risk_score: 15
+    mapped_controls: ["CTRL-SC-001"]
+
+  - risk_id: RISK-KEY-001
+    title: Key compromise or poor key lifecycle management
+    description: Encryption keys are not rotated, scoped, or protected appropriately.
+    likelihood: 3
+    impact: 5
+    inherent_risk_score: 15
+    mapped_controls: ["CTRL-SC-001"]

@@ -1,0 +1,5 @@
+technique_id,technique_name,control_id,control_name
+T1078,Valid Accounts,CTRL-AC-001,Account Provisioning and Deprovisioning
+T1071,Application Layer Protocol,CTRL-AU-001,Centralized Security Logging
+T1486,Data Encrypted for Impact,CTRL-CP-001,Backup and Recovery Testing
+T1562,Impair Defenses,CTRL-CM-001,Configuration Baseline and Change Control

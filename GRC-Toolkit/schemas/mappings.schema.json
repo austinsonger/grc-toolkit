@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Mappings Dataset",
+  "$defs": {
+    "setTheoryRelationship": {
+      "type": "object",
+      "required": ["relation", "source_scope", "target_scope"],
+      "properties": {
+        "relation": {
+          "type": "string",
+          "enum": ["equivalent", "subset", "superset", "intersection", "disjoint"],
+          "description": "Set-theory relation where source_scope is compared against target_scope."
+        },
+        "source_scope": {
+          "type": "string",
+          "enum": [
+            "framework_control_set",
+            "normalized_control_set",
+            "control_requirement_set",
+            "risk_scenario_set",
+            "implementation_evidence_set"
+          ]
+        },
+        "target_scope": {
+          "type": "string",
+          "enum": [
+            "framework_control_set",
+            "normalized_control_set",
+            "control_requirement_set",
+            "risk_scenario_set",
+            "implementation_evidence_set"
+          ]
+        },
+        "confidence_alignment": {
+          "type": "string",
+          "enum": ["high", "medium", "low"],
+          "description": "Optional confidence estimate for the set-theory relation."
+        },
+        "rationale": {
+          "type": "string",
+          "description": "Evidence-backed reasoning for why the set relation applies."
+        }
+      }
+    }
+  },
+  "type": "object",
+  "required": ["version", "generated_at", "mappings"],
+  "properties": {
+    "version": {"type": "string"},
+    "generated_at": {"type": "string"},
+    "mappings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "mapping_id",
+          "source_framework",
+          "source_control",
+          "target_framework",
+          "target_control",
+          "normalized_control_id",
+          "relationship",
+          "confidence"
+        ],
+        "properties": {
+          "mapping_id": {"type": "string"},
+          "source_framework": {"type": "string"},
+          "source_control": {"type": "string"},
+          "target_framework": {"type": "string"},
+          "target_control": {"type": "string"},
+          "normalized_control_id": {"type": "string", "pattern": "^CTRL-[A-Z]{2,5}-[0-9]{3}$"},
+          "relationship": {"type": "string", "enum": ["equivalent", "overlap", "partial"]},
+          "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+          "rationale": {"type": "string"},
+          "set_theory_relationships": {
+            "type": "array",
+            "description": "Optional IR 8477-aligned set relations. Preserves legacy relationship field for compatibility.",
+            "items": {"$ref": "#/$defs/setTheoryRelationship"}
+          }
+        }
+      }
+    }
+  }
+}

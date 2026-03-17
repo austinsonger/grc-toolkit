@@ -1,0 +1,84 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-03-17",
+  "controls": [
+    {
+      "control_id": "CTRL-AC-001",
+      "title": "Account Provisioning and Deprovisioning",
+      "description": "Access to systems is approved, provisioned, reviewed, and revoked based on role and business need.",
+      "domain": "Access Control",
+      "framework_refs": [
+        {"framework": "NIST SP 800-53 Rev.5", "controls": ["AC-2", "AC-3"]},
+        {"framework": "ISO/IEC 27001:2022", "controls": ["A.5.15", "A.5.18"]},
+        {"framework": "SOC 2", "controls": ["CC6.1", "CC6.2"]}
+      ],
+      "risk_ids": ["RISK-IAM-001", "RISK-PRIV-002"],
+      "owners": ["IAM Team", "GRC Team"]
+    },
+    {
+      "control_id": "CTRL-AU-001",
+      "title": "Centralized Security Logging",
+      "description": "Security-relevant events are logged, centralized, retained, and analyzed.",
+      "domain": "Audit and Accountability",
+      "framework_refs": [
+        {"framework": "NIST SP 800-53 Rev.5", "controls": ["AU-2", "AU-6", "AU-11", "AU-12"]},
+        {"framework": "ISO/IEC 27001:2022", "controls": ["A.8.15", "A.8.16"]},
+        {"framework": "SOC 2", "controls": ["CC7.2", "CC7.3"]}
+      ],
+      "risk_ids": ["RISK-LOG-001", "RISK-IR-003"],
+      "owners": ["Security Operations"]
+    },
+    {
+      "control_id": "CTRL-CM-001",
+      "title": "Configuration Baseline and Change Control",
+      "description": "Secure baselines are defined, enforced, and deviations are managed.",
+      "domain": "Configuration Management",
+      "framework_refs": [
+        {"framework": "NIST SP 800-53 Rev.5", "controls": ["CM-2", "CM-3", "CM-6"]},
+        {"framework": "ISO/IEC 27001:2022", "controls": ["A.8.9", "A.8.32"]},
+        {"framework": "SOC 2", "controls": ["CC8.1", "CC8.2"]}
+      ],
+      "risk_ids": ["RISK-CFG-001", "RISK-CHG-001"],
+      "owners": ["Cloud Platform", "DevSecOps"]
+    },
+    {
+      "control_id": "CTRL-IR-001",
+      "title": "Incident Response Lifecycle",
+      "description": "Incidents are detected, triaged, contained, remediated, and learned from.",
+      "domain": "Incident Response",
+      "framework_refs": [
+        {"framework": "NIST SP 800-53 Rev.5", "controls": ["IR-4", "IR-5", "IR-6", "IR-8"]},
+        {"framework": "ISO/IEC 27001:2022", "controls": ["A.5.24", "A.5.25", "A.5.26"]},
+        {"framework": "SOC 2", "controls": ["CC7.4", "CC7.5"]}
+      ],
+      "risk_ids": ["RISK-IR-001", "RISK-IR-002"],
+      "owners": ["Incident Response Team"]
+    },
+    {
+      "control_id": "CTRL-CP-001",
+      "title": "Backup and Recovery Testing",
+      "description": "Backups are protected and periodically tested for recoverability.",
+      "domain": "Continuity Planning",
+      "framework_refs": [
+        {"framework": "NIST SP 800-53 Rev.5", "controls": ["CP-9", "CP-10"]},
+        {"framework": "ISO/IEC 27001:2022", "controls": ["A.8.13", "A.5.30"]},
+        {"framework": "SOC 2", "controls": ["A1.2", "CC7.3"]}
+      ],
+      "risk_ids": ["RISK-BCP-001", "RISK-RANSOM-001"],
+      "owners": ["SRE", "Business Continuity"]
+    },
+    {
+      "control_id": "CTRL-SC-001",
+      "title": "Encryption in Transit and At Rest",
+      "description": "Sensitive data is encrypted in transit and at rest with approved algorithms.",
+      "domain": "System and Communications Protection",
+      "framework_refs": [
+        {"framework": "NIST SP 800-53 Rev.5", "controls": ["SC-8", "SC-12", "SC-13", "SC-28"]},
+        {"framework": "ISO/IEC 27001:2022", "controls": ["A.8.24"]},
+        {"framework": "SOC 2", "controls": ["CC6.7", "CC6.8"]}
+      ],
+      "risk_ids": ["RISK-DATA-001", "RISK-KEY-001"],
+      "owners": ["Security Engineering"]
+    }
+  ]
+}

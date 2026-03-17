@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Controls Dataset",
+  "$defs": {
+    "setTheoryRelationship": {
+      "type": "object",
+      "required": ["relation", "source_scope", "target_scope"],
+      "properties": {
+        "relation": {
+          "type": "string",
+          "enum": ["equivalent", "subset", "superset", "intersection", "disjoint"],
+          "description": "Set-theory relation where source_scope is compared against target_scope."
+        },
+        "source_scope": {
+          "type": "string",
+          "enum": [
+            "framework_control_set",
+            "normalized_control_set",
+            "control_requirement_set",
+            "risk_scenario_set",
+            "implementation_evidence_set"
+          ]
+        },
+        "target_scope": {
+          "type": "string",
+          "enum": [
+            "framework_control_set",
+            "normalized_control_set",
+            "control_requirement_set",
+            "risk_scenario_set",
+            "implementation_evidence_set"
+          ]
+        },
+        "confidence_alignment": {
+          "type": "string",
+          "enum": ["high", "medium", "low"]
+        },
+        "rationale": {"type": "string"}
+      }
+    }
+  },
+  "type": "object",
+  "required": ["version", "generated_at", "controls"],
+  "properties": {
+    "version": {"type": "string"},
+    "generated_at": {"type": "string"},
+    "controls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["control_id", "title", "description", "domain", "framework_refs", "risk_ids"],
+        "properties": {
+          "control_id": {"type": "string", "pattern": "^CTRL-[A-Z]{2,5}-[0-9]{3}$"},
+          "title": {"type": "string"},
+          "description": {"type": "string"},
+          "domain": {"type": "string"},
+          "framework_refs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["framework", "controls"],
+              "properties": {
+                "framework": {"type": "string"},
+                "controls": {"type": "array", "items": {"type": "string"}}
+              }
+            }
+          },
+          "risk_ids": {"type": "array", "items": {"type": "string"}},
+          "owners": {"type": "array", "items": {"type": "string"}},
+          "set_theory_relationships": {
+            "type": "array",
+            "description": "Optional IR 8477-aligned set relations for control-to-control or control-to-risk semantics.",
+            "items": {"$ref": "#/$defs/setTheoryRelationship"}
+          }
+        }
+      }
+    }
+  }
+}

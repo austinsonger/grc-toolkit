@@ -1,0 +1,4 @@
+review_period,user_id,role,system,reviewer,decision,review_date
+2026-Q1,u-1023,ReadOnly,ProdAnalytics,mgr-44,approved,2026-01-15
+2026-Q1,u-1077,Admin,ProdBilling,mgr-18,revoked,2026-01-16
+2026-Q1,u-1110,Developer,CoreAPI,mgr-03,approved,2026-01-16

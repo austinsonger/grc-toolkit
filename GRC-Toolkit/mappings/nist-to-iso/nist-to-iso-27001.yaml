@@ -1,0 +1,19 @@
+version: "2026.03"
+source_framework: "NIST SP 800-53 Rev.5"
+target_framework: "ISO/IEC 27001:2022"
+mappings:
+  - mapping_id: MAP-N2I-AC2-001
+    source_control: "AC-2"
+    target_control: "A.5.15"
+    normalized_control_id: "CTRL-AC-001"
+    relationship: "equivalent"
+    rationale: "Both require identity lifecycle controls for user access provisioning and revocation."
+    confidence: "high"
+
+  - mapping_id: MAP-N2I-AU6-001
+    source_control: "AU-6"
+    target_control: "A.8.16"
+    normalized_control_id: "CTRL-AU-001"
+    relationship: "overlap"
+    rationale: "Both require monitoring and analysis of security events, with different implementation specificity."
+    confidence: "medium"

@@ -1,0 +1,4 @@
+control_area,csp_responsibility,customer_responsibility
+Identity platform availability,Operate IdP service,Configure MFA and lifecycle rules
+Data backup of platform,Perform platform backups,Define data retention and export checks
+Application security updates,Patch platform code,Test integrations after updates

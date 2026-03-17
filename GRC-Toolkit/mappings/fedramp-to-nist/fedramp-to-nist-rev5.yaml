@@ -1,0 +1,11 @@
+version: "2026.03"
+source_framework: "FedRAMP Moderate Rev.5"
+target_framework: "NIST SP 800-53 Rev.5"
+mappings:
+  - mapping_id: MAP-F2N-AU2-001
+    source_control: "AU-2"
+    target_control: "AU-2"
+    normalized_control_id: "CTRL-AU-001"
+    relationship: "equivalent"
+    rationale: "FedRAMP inherits NIST baseline control language for AU family."
+    confidence: "high"

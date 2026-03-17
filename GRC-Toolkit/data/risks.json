@@ -1,0 +1,18 @@
+{
+  "version": "1.1.0",
+  "generated_at": "2026-03-17",
+  "risks": [
+    {"risk_id": "RISK-IAM-001", "title": "Unauthorized access from stale identities", "description": "Inactive workforce identities remain enabled and can be abused.", "likelihood": 3, "impact": 5, "mapped_controls": ["CTRL-AC-001"], "risk_owner": "IAM Manager"},
+    {"risk_id": "RISK-PRIV-002", "title": "Privilege misuse through standing access", "description": "Persistent elevated access increases insider and credential-theft impact.", "likelihood": 3, "impact": 5, "mapped_controls": ["CTRL-AC-001"], "risk_owner": "Security Engineering Manager"},
+    {"risk_id": "RISK-LOG-001", "title": "Inability to detect malicious activity", "description": "Insufficient log collection and monitoring delay threat detection.", "likelihood": 4, "impact": 5, "mapped_controls": ["CTRL-AU-001", "CTRL-IR-001"], "risk_owner": "Security Operations Manager"},
+    {"risk_id": "RISK-IR-003", "title": "Delayed incident containment", "description": "Missing telemetry slows investigation and containment decisions.", "likelihood": 3, "impact": 4, "mapped_controls": ["CTRL-AU-001", "CTRL-IR-001"], "risk_owner": "Incident Response Lead"},
+    {"risk_id": "RISK-CFG-001", "title": "Misconfiguration introduces exploitable exposure", "description": "Uncontrolled changes diverge from hardened baselines.", "likelihood": 4, "impact": 4, "mapped_controls": ["CTRL-CM-001"], "risk_owner": "Cloud Platform Lead"},
+    {"risk_id": "RISK-CHG-001", "title": "Unauthorized production change", "description": "Changes bypass approval and create service or security risk.", "likelihood": 3, "impact": 4, "mapped_controls": ["CTRL-CM-001"], "risk_owner": "Change Manager"},
+    {"risk_id": "RISK-IR-001", "title": "Uncoordinated incident response", "description": "Response actions are inconsistent across teams.", "likelihood": 3, "impact": 4, "mapped_controls": ["CTRL-IR-001"], "risk_owner": "Incident Response Lead"},
+    {"risk_id": "RISK-IR-002", "title": "Repeat incidents due to weak remediation tracking", "description": "Post-incident actions are not effectively tracked.", "likelihood": 3, "impact": 3, "mapped_controls": ["CTRL-IR-001"], "risk_owner": "GRC Program Manager"},
+    {"risk_id": "RISK-BCP-001", "title": "Recovery objectives are missed", "description": "Recovery process is not validated against business RTO/RPO.", "likelihood": 3, "impact": 5, "mapped_controls": ["CTRL-CP-001"], "risk_owner": "Business Continuity Lead"},
+    {"risk_id": "RISK-RANSOM-001", "title": "Ransomware blocks recovery", "description": "Backups are unavailable, corrupted, or untested.", "likelihood": 3, "impact": 5, "mapped_controls": ["CTRL-CP-001"], "risk_owner": "SRE Manager"},
+    {"risk_id": "RISK-DATA-001", "title": "Sensitive data disclosure", "description": "Weak encryption controls expose regulated or confidential data.", "likelihood": 3, "impact": 5, "mapped_controls": ["CTRL-SC-001"], "risk_owner": "Data Protection Officer"},
+    {"risk_id": "RISK-KEY-001", "title": "Key compromise", "description": "Key lifecycle practices are insufficient to prevent misuse.", "likelihood": 3, "impact": 5, "mapped_controls": ["CTRL-SC-001"], "risk_owner": "Cryptography Service Owner"}
+  ]
+}

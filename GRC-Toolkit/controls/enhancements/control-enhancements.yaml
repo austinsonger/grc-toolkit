@@ -1,0 +1,16 @@
+enhancements:
+  - enhancement_id: ENH-AU-001
+    base_control: CTRL-AU-001
+    title: Immutable Log Storage
+    description: Write logs to immutable storage with legal hold support.
+    implementation_notes:
+      - Configure S3 Object Lock in compliance mode.
+      - Restrict delete permissions using SCP and IAM boundaries.
+
+  - enhancement_id: ENH-AC-001
+    base_control: CTRL-AC-001
+    title: Just-In-Time Privileged Access
+    description: Remove standing admin roles and require short-lived elevation.
+    implementation_notes:
+      - Require approval workflow in IAM Identity Center.
+      - Enforce time-bound role sessions under 60 minutes.

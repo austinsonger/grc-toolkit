@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Risks Dataset",
+  "$defs": {
+    "setTheoryRelationship": {
+      "type": "object",
+      "required": ["relation", "source_scope", "target_scope"],
+      "properties": {
+        "relation": {
+          "type": "string",
+          "enum": ["equivalent", "subset", "superset", "intersection", "disjoint"],
+          "description": "Set-theory relation where source_scope is compared against target_scope."
+        },
+        "source_scope": {
+          "type": "string",
+          "enum": [
+            "framework_control_set",
+            "normalized_control_set",
+            "control_requirement_set",
+            "risk_scenario_set",
+            "implementation_evidence_set"
+          ]
+        },
+        "target_scope": {
+          "type": "string",
+          "enum": [
+            "framework_control_set",
+            "normalized_control_set",
+            "control_requirement_set",
+            "risk_scenario_set",
+            "implementation_evidence_set"
+          ]
+        },
+        "confidence_alignment": {
+          "type": "string",
+          "enum": ["high", "medium", "low"]
+        },
+        "rationale": {"type": "string"}
+      }
+    }
+  },
+  "type": "object",
+  "required": ["version", "generated_at", "risks"],
+  "properties": {
+    "version": {"type": "string"},
+    "generated_at": {"type": "string"},
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["risk_id", "title", "description", "likelihood", "impact", "mapped_controls"],
+        "properties": {
+          "risk_id": {"type": "string", "pattern": "^RISK-[A-Z]{2,8}-[0-9]{3}$"},
+          "title": {"type": "string"},
+          "description": {"type": "string"},
+          "likelihood": {"type": "integer", "minimum": 1, "maximum": 5},
+          "impact": {"type": "integer", "minimum": 1, "maximum": 5},
+          "mapped_controls": {
+            "type": "array",
+            "items": {"type": "string", "pattern": "^CTRL-[A-Z]{2,5}-[0-9]{3}$"}
+          },
+          "risk_owner": {"type": "string"},
+          "set_theory_relationships": {
+            "type": "array",
+            "description": "Optional IR 8477-aligned set relations for risk-to-control or risk-to-risk semantics.",
+            "items": {"$ref": "#/$defs/setTheoryRelationship"}
+          }
+        }
+      }
+    }
+  }
+}
