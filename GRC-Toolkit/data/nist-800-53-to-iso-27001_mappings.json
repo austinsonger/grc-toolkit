@@ -1,0 +1,140 @@
+{
+  "version": "1.2.0",
+  "generated_at": "2026-03-17",
+  "mappings": [
+    {
+      "mapping_id": "MAP-N2I-AC2-001",
+      "source_framework": "NIST SP 800-53 Rev.5",
+      "source_control": "AC-2",
+      "target_framework": "ISO/IEC 27001:2022",
+      "target_control": "A.5.15",
+      "normalized_control_id": "CTRL-AC-001",
+      "relationship": "equivalent",
+      "confidence": "high",
+      "rationale": "Identity lifecycle management requirements are semantically aligned.",
+      "set_theory_relationships": [
+        {
+          "relation": "equal",
+          "rationale": "semantic",
+          "source_scope": "control_requirement_set",
+          "target_scope": "control_requirement_set",
+          "confidence_alignment": "high"
+        }
+      ],
+      "source_control_parts": [],
+      "target_control_parts": [],
+      "parameter": {
+        "source": {},
+        "target": {}
+      }
+    },
+    {
+      "mapping_id": "MAP-N2I-AU6-001",
+      "source_framework": "NIST SP 800-53 Rev.5",
+      "source_control": "AU-6",
+      "target_framework": "ISO/IEC 27001:2022",
+      "target_control": "A.8.16",
+      "normalized_control_id": "CTRL-AU-001",
+      "relationship": "overlap",
+      "confidence": "medium",
+      "rationale": "Monitoring intent aligns; operational depth differs by implementation context.",
+      "set_theory_relationships": [
+        {
+          "relation": "intersects_with",
+          "rationale": "semantic",
+          "source_scope": "control_requirement_set",
+          "target_scope": "control_requirement_set",
+          "confidence_alignment": "medium"
+        }
+      ],
+      "source_control_parts": [],
+      "target_control_parts": [],
+      "parameter": {
+        "source": {
+          "review_frequency": "near-real-time monitoring"
+        },
+        "target": {
+          "review_frequency": "defined periodic review cadence"
+        }
+      }
+    },
+    {
+      "mapping_id": "MAP-N2I-CM3-SET-001",
+      "source_framework": "NIST SP 800-53 Rev.5",
+      "source_control": "CM-3",
+      "target_framework": "ISO/IEC 27001:2022",
+      "target_control": "A.8.32",
+      "normalized_control_id": "CTRL-CM-001",
+      "relationship": "equivalent",
+      "confidence": "high",
+      "rationale": "Both concepts require governed change management with approval and control of production-impacting changes.",
+      "set_theory_relationships": [
+        {
+          "relation": "equal",
+          "rationale": "semantic",
+          "source_scope": "control_requirement_set",
+          "target_scope": "control_requirement_set",
+          "confidence_alignment": "high"
+        }
+      ],
+      "source_control_parts": [],
+      "target_control_parts": [],
+      "parameter": {
+        "source": {},
+        "target": {}
+      }
+    },
+    {
+      "mapping_id": "MAP-N2I-IR5-SET-001",
+      "source_framework": "NIST SP 800-53 Rev.5",
+      "source_control": "IR-5",
+      "target_framework": "ISO/IEC 27001:2022",
+      "target_control": "A.5.24",
+      "normalized_control_id": "CTRL-IR-001",
+      "relationship": "partial",
+      "confidence": "medium",
+      "rationale": "ISO incident planning is broader while NIST IR-5 focuses specifically on incident monitoring and reporting mechanisms.",
+      "set_theory_relationships": [
+        {
+          "relation": "subset_of",
+          "rationale": "functional",
+          "source_scope": "control_requirement_set",
+          "target_scope": "control_requirement_set",
+          "confidence_alignment": "medium"
+        }
+      ],
+      "source_control_parts": [],
+      "target_control_parts": [],
+      "parameter": {
+        "source": {},
+        "target": {}
+      }
+    },
+    {
+      "mapping_id": "MAP-N2I-AU6-SET-002",
+      "source_framework": "NIST SP 800-53 Rev.5",
+      "source_control": "AU-6",
+      "target_framework": "ISO/IEC 27001:2022",
+      "target_control": "A.8.16",
+      "normalized_control_id": "CTRL-AU-001",
+      "relationship": "overlap",
+      "confidence": "medium",
+      "rationale": "Both address event monitoring and analysis, but each includes implementation details and outcomes not fully shared by the other.",
+      "set_theory_relationships": [
+        {
+          "relation": "intersects_with",
+          "rationale": "semantic",
+          "source_scope": "control_requirement_set",
+          "target_scope": "control_requirement_set",
+          "confidence_alignment": "medium"
+        }
+      ],
+      "source_control_parts": [],
+      "target_control_parts": [],
+      "parameter": {
+        "source": {},
+        "target": {}
+      }
+    }
+  ]
+}

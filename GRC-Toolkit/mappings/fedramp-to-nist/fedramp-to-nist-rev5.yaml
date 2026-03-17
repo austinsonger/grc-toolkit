@@ -5,6 +5,11 @@ mappings:
   - mapping_id: MAP-F2N-AU2-001
     source_control: "AU-2"
     target_control: "AU-2"
+    source_control_parts: []
+    target_control_parts: []
+    parameter:
+      source: {}
+      target: {}
     normalized_control_id: "CTRL-AU-001"
     relationship: "equivalent"
     rationale: "FedRAMP inherits NIST baseline control language for AU family."

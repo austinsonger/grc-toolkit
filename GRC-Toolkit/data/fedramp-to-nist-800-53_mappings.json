@@ -1,0 +1,32 @@
+{
+  "version": "1.2.0",
+  "generated_at": "2026-03-17",
+  "mappings": [
+    {
+      "mapping_id": "MAP-F2N-AU2-001",
+      "source_framework": "FedRAMP Rev.5",
+      "source_control": "AU-2",
+      "target_framework": "NIST SP 800-53 Rev.5",
+      "target_control": "AU-2",
+      "normalized_control_id": "CTRL-AU-001",
+      "relationship": "equivalent",
+      "confidence": "high",
+      "rationale": "FedRAMP control baseline is directly derived from NIST Rev.5 controls.",
+      "set_theory_relationships": [
+        {
+          "relation": "equal",
+          "rationale": "semantic",
+          "source_scope": "control_requirement_set",
+          "target_scope": "control_requirement_set",
+          "confidence_alignment": "high"
+        }
+      ],
+      "source_control_parts": [],
+      "target_control_parts": [],
+      "parameter": {
+        "source": {},
+        "target": {}
+      }
+    }
+  ]
+}

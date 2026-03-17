@@ -5,6 +5,11 @@ mappings:
   - mapping_id: MAP-N2S-AC2-001
     source_control: "AC-2"
     target_control: "CC6.1"
+    source_control_parts: []
+    target_control_parts: []
+    parameter:
+      source: {}
+      target: {}
     normalized_control_id: "CTRL-AC-001"
     relationship: "equivalent"
     rationale: "User identity and access lifecycle management aligns directly with logical access criteria."
@@ -13,6 +18,11 @@ mappings:
   - mapping_id: MAP-N2S-IR4-001
     source_control: "IR-4"
     target_control: "CC7.4"
+    source_control_parts: []
+    target_control_parts: []
+    parameter:
+      source: {}
+      target: {}
     normalized_control_id: "CTRL-IR-001"
     relationship: "equivalent"
     rationale: "Both require response and remediation processes for identified incidents."

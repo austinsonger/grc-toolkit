@@ -1,0 +1,32 @@
+{
+  "version": "1.2.0",
+  "generated_at": "2026-03-17",
+  "mappings": [
+    {
+      "mapping_id": "MAP-S2N-CC61-001",
+      "source_framework": "SOC 2",
+      "source_control": "CC6.1",
+      "target_framework": "NIST SP 800-53 Rev.5",
+      "target_control": "AC-2",
+      "normalized_control_id": "CTRL-AC-001",
+      "relationship": "equivalent",
+      "confidence": "high",
+      "rationale": "Both require authorization and lifecycle access controls.",
+      "set_theory_relationships": [
+        {
+          "relation": "equal",
+          "rationale": "semantic",
+          "source_scope": "control_requirement_set",
+          "target_scope": "control_requirement_set",
+          "confidence_alignment": "high"
+        }
+      ],
+      "source_control_parts": [],
+      "target_control_parts": [],
+      "parameter": {
+        "source": {},
+        "target": {}
+      }
+    }
+  ]
+}

@@ -24,8 +24,9 @@ Examples:
 ## Validation Commands
 ```bash
 jq . data/controls.json > /dev/null
-jq . data/mappings.json > /dev/null
+jq . data/*_mappings.json > /dev/null
 jq . data/risks.json > /dev/null
+jq . data/threats.json > /dev/null
 ```
 
 ## Review Expectations

@@ -40,7 +40,7 @@ This repository is not a static reference library. It is structured for day-to-d
 - `assessments/`: Gap analysis templates and scoring models
 - `automation/`: Scripts, compliance-as-code, and detections
 - `threat-mapping/`: ATT&CK-to-control and threat-control alignment
-- `data/`: Machine-readable datasets (`controls.json`, `mappings.json`, `risks.json`)
+- `data/`: Machine-readable datasets (`controls.json`, `*_mappings.json`, `risks.json`, `threats.json`)
 - `schemas/`: JSON schemas for data quality and automation pipelines
 - `playbooks/`: Operational playbooks for evidence and incident response support
 - `integrations/`: Jira/ServiceNow integration examples
@@ -49,11 +49,12 @@ This repository is not a static reference library. It is structured for day-to-d
 
 ## How To Use
 1. Start with `controls/normalized/unified-controls.yaml` and `data/controls.json` as the source of truth.
-2. Use `mappings/` and `data/mappings.json` to build cross-framework coverage reports.
+2. Use `mappings/` and `data/*_mappings.json` files to build cross-framework coverage reports.
 3. Use `risk-library/` and `data/risks.json` to prioritize implementation by risk.
-4. Implement controls using `implementation-guides/` and `automation/compliance-as-code/`.
-5. Collect evidence using `automation/scripts/` and store outputs in `evidence/artifacts/`.
-6. Run audits using checklists in `audits/` and templates in `assessments/`.
+4. Use `data/threats.json` to incorporate natural and man-made threat scenarios into risk and resilience analysis.
+5. Implement controls using `implementation-guides/` and `automation/compliance-as-code/`.
+6. Collect evidence using `automation/scripts/` and store outputs in `evidence/artifacts/`.
+7. Run audits using checklists in `audits/` and templates in `assessments/`.
 
 ## Data Standards
 - Control IDs use canonical form: `CTRL-<DOMAIN>-<NUMBER>` (example: `CTRL-AC-001`)
@@ -65,8 +66,9 @@ This repository is not a static reference library. It is structured for day-to-d
 ```bash
 cd GRC-Toolkit
 jq . data/controls.json > /dev/null
-jq . data/mappings.json > /dev/null
+jq . data/*_mappings.json > /dev/null
 jq . data/risks.json > /dev/null
+jq . data/threats.json > /dev/null
 bash automation/scripts/aws_collect_evidence.sh --help
 ```
 
