@@ -14,7 +14,6 @@
 ## Set-Theory Mapping Guidance
 - Use canonical IR 8477 relation values when possible: `equal`, `subset_of`, `superset_of`, `intersects_with`, `no_relationship`.
 - Record rationale context as one of: `syntactic`, `semantic`, `functional`.
-- Legacy aliases may appear for compatibility in historical datasets, but new mappings should prefer canonical values.
 
 ## Sub-Part and Parameter Guidance
 - Populate `source_control_parts` and `target_control_parts` when a control references sub-parts (for example NIST SP 800-53 control enhancements like `(1)`, `(2)`).
