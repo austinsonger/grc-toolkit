@@ -1,0 +1,95 @@
+#!/bin/bash
+# Helper script for CloudWatch High Availability validation
+
+# Steps:
+# 1. CloudWatch Monitoring
+#    - Auto Scaling policies
+#    - CloudWatch alarms
+#
+# Output: Creates JSON with validation results
+
+# Load environment and parse args
+source "$(dirname "$0")/../common/env_loader.sh" "$@"
+
+# Component identifier
+COMPONENT="cloudwatch_high_availability"
+OUTPUT_JSON="$OUTPUT_DIR/$COMPONENT.json"
+
+# ANSI color codes for better output readability
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+# Get caller identity for metadata
+CALLER_IDENTITY=$(aws sts get-caller-identity --profile "$PROFILE" --output json 2>/dev/null || echo '{"Account":"unknown","Arn":"unknown"}')
+ACCOUNT_ID=$(echo "$CALLER_IDENTITY" | jq -r '.Account // "unknown"')
+ARN=$(echo "$CALLER_IDENTITY" | jq -r '.Arn // "unknown"')
+DATETIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+# Initialize JSON file with metadata
+jq -n \
+  --arg profile "$PROFILE" \
+  --arg region "$REGION" \
+  --arg datetime "$DATETIME" \
+  --arg account_id "$ACCOUNT_ID" \
+  --arg arn "$ARN" \
+  '{
+    "metadata": {
+      "profile": $profile,
+      "region": $region,
+      "datetime": $datetime,
+      "account_id": $account_id,
+      "arn": $arn
+    },
+    "results": []
+  }' > "$OUTPUT_JSON"
+
+echo -e "${BLUE}Starting CloudWatch High Availability validation...${NC}"
+
+# 6. CloudWatch Monitoring
+echo -e "${BLUE}6. Validating CloudWatch Monitoring...${NC}"
+
+# Get scaling policies
+scaling_policies=$(aws autoscaling describe-policies --profile "$PROFILE" --query 'ScalingPolicies[*]' --output json 2>/dev/null)
+
+if [ $? -eq 0 ]; then
+    echo "$scaling_policies" | jq -c '.[]' | while read -r policy; do
+        policy_name=$(echo "$policy" | jq -r '.PolicyName')
+        asg_name=$(echo "$policy" | jq -r '.AutoScalingGroupName')
+        policy_type=$(echo "$policy" | jq -r '.PolicyType')
+        
+        echo -e "${BLUE}Processing scaling policy: $policy_name${NC}"
+        
+        # Add to JSON
+        jq --argjson policy "$policy" \
+           '.results += [{"Type": "ScalingPolicy", "PolicyInfo": $policy}]' \
+           "$OUTPUT_JSON" > tmp.json && mv tmp.json "$OUTPUT_JSON"
+        
+    done
+fi
+
+# Get CloudWatch alarms
+cloudwatch_alarms=$(aws cloudwatch describe-alarms --profile "$PROFILE" --query 'MetricAlarms[*]' --output json 2>/dev/null)
+
+if [ $? -eq 0 ]; then
+    echo "$cloudwatch_alarms" | jq -c '.[]' | while read -r alarm; do
+        alarm_name=$(echo "$alarm" | jq -r '.AlarmName')
+        state=$(echo "$alarm" | jq -r '.StateValue')
+        metric_name=$(echo "$alarm" | jq -r '.MetricName')
+        
+        echo -e "${BLUE}Processing CloudWatch alarm: $alarm_name${NC}"
+        
+        # Add to JSON
+        jq --argjson alarm "$alarm" \
+           '.results += [{"Type": "CloudWatch_Alarm", "AlarmInfo": $alarm}]' \
+           "$OUTPUT_JSON" > tmp.json && mv tmp.json "$OUTPUT_JSON"
+        
+    done
+fi
+
+echo -e "${GREEN}CloudWatch High Availability validation completed!${NC}"
+echo -e "${BLUE}Results saved to: $OUTPUT_JSON${NC}"
+
+exit 0 

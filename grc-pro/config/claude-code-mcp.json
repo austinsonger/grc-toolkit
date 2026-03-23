@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "grc-toolkit": {
+      "command": "uv",
+      "args": ["--directory", "/Users/austinsonger/code/grc-toolkit/grc-mcp-server", "run", "grc-mcp-server"],
+      "env": {
+        "GRC_REPO_ROOT": "/Users/austinsonger/code/grc-toolkit"
+      }
+    }
+  }
+}

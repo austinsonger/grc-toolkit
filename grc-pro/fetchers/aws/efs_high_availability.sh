@@ -1,0 +1,79 @@
+#!/bin/bash
+# Helper script for EFS High Availability validation
+
+# Steps:
+# 1. EFS High Availability
+#    - EFS mount targets across AZs
+#
+# Output: Creates JSON with validation results
+
+# Load environment and parse args
+source "$(dirname "$0")/../common/env_loader.sh" "$@"
+
+# Component identifier
+COMPONENT="efs_high_availability"
+OUTPUT_JSON="$OUTPUT_DIR/$COMPONENT.json"
+
+# ANSI color codes for better output readability
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+# Get caller identity for metadata
+CALLER_IDENTITY=$(aws sts get-caller-identity --profile "$PROFILE" --output json 2>/dev/null || echo '{"Account":"unknown","Arn":"unknown"}')
+ACCOUNT_ID=$(echo "$CALLER_IDENTITY" | jq -r '.Account // "unknown"')
+ARN=$(echo "$CALLER_IDENTITY" | jq -r '.Arn // "unknown"')
+DATETIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+# Initialize JSON file with metadata
+jq -n \
+  --arg profile "$PROFILE" \
+  --arg region "$REGION" \
+  --arg datetime "$DATETIME" \
+  --arg account_id "$ACCOUNT_ID" \
+  --arg arn "$ARN" \
+  '{
+    "metadata": {
+      "profile": $profile,
+      "region": $region,
+      "datetime": $datetime,
+      "account_id": $account_id,
+      "arn": $arn
+    },
+    "results": []
+  }' > "$OUTPUT_JSON"
+
+echo -e "${BLUE}Starting EFS High Availability validation...${NC}"
+
+# 9. EFS High Availability
+echo -e "${BLUE}9. Validating EFS High Availability...${NC}"
+
+# Get EFS file systems
+efs_filesystems=$(aws efs describe-file-systems --profile "$PROFILE" --query 'FileSystems[*]' --output json 2>/dev/null)
+
+if [ $? -eq 0 ]; then
+    echo "$efs_filesystems" | jq -c '.[]' | while read -r efs; do
+        fs_id=$(echo "$efs" | jq -r '.FileSystemId')
+        creation_time=$(echo "$efs" | jq -r '.CreationTime')
+        mount_target_count=$(echo "$efs" | jq -r '.NumberOfMountTargets')
+        
+        echo -e "${BLUE}Processing EFS file system: $fs_id${NC}"
+        
+        # Get mount targets
+        mount_targets=$(aws efs describe-mount-targets --profile "$PROFILE" --file-system-id "$fs_id" --query 'MountTargets[*]' --output json 2>/dev/null)
+        
+        # Add to JSON
+        jq --argjson efs "$efs" \
+           --argjson targets "$mount_targets" \
+           '.results += [{"Type": "EFS_FileSystem", "EFSInfo": $efs, "MountTargets": $targets}]' \
+           "$OUTPUT_JSON" > tmp.json && mv tmp.json "$OUTPUT_JSON"
+        
+    done
+fi
+
+echo -e "${GREEN}EFS High Availability validation completed!${NC}"
+echo -e "${BLUE}Results saved to: $OUTPUT_JSON${NC}"
+
+exit 0 

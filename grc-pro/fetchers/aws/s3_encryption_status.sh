@@ -1,0 +1,103 @@
+#!/bin/bash
+
+# Helper script for AWS S3 Encryption at Rest Validation
+
+# Steps:
+# 1. List and check S3 bucket encryption at rest
+#    aws s3api list-buckets --query "Buckets[*].Name"
+#    aws s3api get-bucket-encryption --bucket [bucket-name]
+
+# Output: Creates JSON report with S3 encryption at rest status
+
+# Load environment and parse args
+source "$(dirname "$0")/../common/env_loader.sh" "$@"
+
+# Initialize counters
+total_buckets=0
+encrypted_buckets=0
+
+# Get caller identity for metadata
+CALLER_IDENTITY=$(aws sts get-caller-identity --profile "$PROFILE" --output json 2>/dev/null || echo '{"Account":"unknown","Arn":"unknown"}')
+ACCOUNT_ID=$(echo "$CALLER_IDENTITY" | jq -r '.Account // "unknown"')
+ARN=$(echo "$CALLER_IDENTITY" | jq -r '.Arn // "unknown"')
+DATETIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+# Check S3 buckets
+s3_results=()
+for bucket in $(aws s3api list-buckets --profile "$PROFILE" --region "$REGION" --query "Buckets[*].Name" --output text); do
+    total_buckets=$((total_buckets + 1))
+    
+    # Get bucket encryption configuration
+    if aws s3api get-bucket-encryption --bucket "$bucket" --profile "$PROFILE" --region "$REGION" &> /dev/null; then
+        # Get encryption details
+        encryption_config=$(aws s3api get-bucket-encryption --bucket "$bucket" --profile "$PROFILE" --region "$REGION")
+        sse_algorithm=$(echo "$encryption_config" | jq -r '.ServerSideEncryptionConfiguration.Rules[0].ApplyServerSideEncryptionByDefault.SSEAlgorithm // "None"')
+        kms_key_id=$(echo "$encryption_config" | jq -r '.ServerSideEncryptionConfiguration.Rules[0].ApplyServerSideEncryptionByDefault.KMSMasterKeyID // "None"')
+        bucket_key_enabled=$(echo "$encryption_config" | jq -r '.ServerSideEncryptionConfiguration.Rules[0].BucketKeyEnabled // false')
+        
+        s3_results+=("$(jq -n \
+            --arg name "$bucket" \
+            --arg type "s3" \
+            --arg sse "$sse_algorithm" \
+            --arg kms "$kms_key_id" \
+            --argjson key_enabled "$bucket_key_enabled" \
+            '{
+                name: $name,
+                type: $type,
+                encrypted: true,
+                encryption_type: $sse,
+                kms_key_id: $kms,
+                bucket_key_enabled: $key_enabled
+            }')")
+        encrypted_buckets=$((encrypted_buckets + 1))
+    else
+        s3_results+=("$(jq -n \
+            --arg name "$bucket" \
+            --arg type "s3" \
+            '{
+                name: $name,
+                type: $type,
+                encrypted: false,
+                encryption_type: "None",
+                kms_key_id: "None",
+                bucket_key_enabled: false
+            }')")
+    fi
+done
+
+# Combine results with metadata
+results_json=$(jq -n \
+    --arg profile "$PROFILE" \
+    --arg region "$REGION" \
+    --arg datetime "$DATETIME" \
+    --arg account_id "$ACCOUNT_ID" \
+    --arg arn "$ARN" \
+    --argjson buckets "[$(IFS=,; echo "${s3_results[*]}")]" \
+    --arg total "$total_buckets" \
+    --arg encrypted "$encrypted_buckets" \
+    --arg percentage "$(( (encrypted_buckets * 100) / total_buckets ))" \
+    '{
+        metadata: {
+            profile: $profile,
+            region: $region,
+            datetime: $datetime,
+            account_id: $account_id,
+            arn: $arn
+        },
+        results: {
+            storage_inventory: {
+                object: $buckets
+            },
+            summary: {
+                total_storage: ($total | tonumber),
+                encrypted_storage: ($encrypted | tonumber),
+                encryption_percentage: ($percentage | tonumber)
+            }
+        }
+    }')
+
+# Write results to JSON file
+echo "$results_json" > "$OUTPUT_DIR/s3_encryption_status.json"
+
+
+exit 0 

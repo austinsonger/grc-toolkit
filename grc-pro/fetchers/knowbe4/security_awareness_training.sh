@@ -1,0 +1,273 @@
+#!/bin/bash
+# Helper script for Security Awareness Training validation
+
+# Note: KnowBe4 API Requirements
+# Source: https://help.sumologic.com/docs/send-data/hosted-collectors/cloud-to-cloud-integration-framework/knowbe4-api-source/
+#
+# KnowBe4 APIs are only limited to Platinum and Diamond customers.
+#
+# Before you begin setting up your KnowBe4 Source, which is required to connect to the KnowBe4 API,
+# you'll need to configure your integration with the Region and KnowBe4 API Token.
+#
+# Region:
+# The Region is the region where your KnowBe4 account is located. To know your region:
+# 1. Sign in to the KnowBe4 application
+# 2. At the top of the browser, you will see the Region inside the address bar
+# 3. Choose the Region from the dropdown based on the location of your KnowBe4 account:
+#    - US
+#    - EU
+#    - CA
+#    - UK
+#    - DE
+#
+# API Token:
+# The API security token is used to authenticate with KnowBe4 API. To get the KnowBe4 API token:
+# 1. Sign in to the KnowBe4 application as an Admin user
+# 2. Navigate to the Account Settings
+# 3. Click Account Integrations from the left menu, and then click API option
+# 4. Under the API section, checkmark the Enable Reporting API Access
+# 5. The KnowBe4 Secure API token is displayed
+# 6. Save this API key to use while configuring the Source
+# 7. Click Save Changes
+#
+# KnowBe4 API Documentation: 
+# https://developer.knowbe4.com/rest/reporting
+#
+#
+# Steps:
+# 1. Get all users from KnowBe4 API
+#    curl -H "Authorization: Bearer $API_KEY" https://us.api.knowbe4.com/v1/users
+#
+# 2. Get all training enrollments
+#    curl -H "Authorization: Bearer $API_KEY" https://us.api.knowbe4.com/v1/training/enrollments
+#
+# Output: Creates unique JSON file and appends to Training-and-Awareness files
+
+# Load environment and parse args
+source "$(dirname "$0")/../common/env_loader.sh" "$@"
+
+# Component identifier
+COMPONENT="security_awareness_training"
+UNIQUE_JSON="$OUTPUT_DIR/$COMPONENT.json"
+
+# Exact Security Awareness campaign name
+SECURITY_AWARENESS_CAMPAIGN="Initial Security Awareness Training"
+
+# Date 1 year ago for tracking retraining
+ONE_YEAR_AGO=$(date -d "1 year ago" +%s)
+
+# ANSI color codes for better output readability
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+# Initialize unique JSON file
+echo '{
+    "results": {
+        "users": [],
+        "enrollments": [],
+        "user_training_status": {},
+        "user_retraining_required": {},
+        "summary": {
+            "total_users": 0,
+            "completed_training": 0,
+            "in_progress": 0,
+            "past_due": 0,
+            "not_started": 0,
+            "needs_retraining": 0,
+            "completion_rate": 0
+        }
+    }
+}' > "$UNIQUE_JSON"
+
+# Check for KnowBe4 API key
+if [ -z "$KNOWBE4_API_KEY" ]; then
+    echo -e "${RED}Error: KNOWBE4_API_KEY environment variable is not set in .env file${NC}" >&2
+    exit 1
+fi
+
+# Check for KnowBe4 region
+if [ -z "$KNOWBE4_REGION" ]; then
+    echo -e "${RED}Error: KNOWBE4_REGION environment variable is not set in .env file${NC}" >&2
+    exit 1
+fi
+
+# Function to make API calls
+make_api_call() {
+    local endpoint=$1
+    local url="https://${KNOWBE4_REGION}.api.knowbe4.com/v1/${endpoint}"
+    local response
+    response=$(curl -s -H "Authorization: Bearer ${KNOWBE4_API_KEY}" -H "Content-Type: application/json" "${url}")
+    
+    # Check if response is valid JSON
+    if ! echo "$response" | jq . >/dev/null 2>&1; then
+        echo "{}"
+        return 1
+    fi
+    
+    # Check for 404 status
+    if echo "$response" | jq -e '.status == 404' >/dev/null 2>&1; then
+        echo "{}"
+        return 1
+    fi
+    
+    echo "$response"
+    return 0
+}
+
+# Function to fetch all pages from a paginated KnowBe4 endpoint
+make_paginated_api_call() {
+    local endpoint="$1"
+    local page=1
+    local all_results="[]"
+    local separator
+
+    if [[ "$endpoint" == *\?* ]]; then
+        separator="&"
+    else
+        separator="?"
+    fi
+
+    while true; do
+        response=$(make_api_call "${endpoint}${separator}page=${page}")
+
+        count=$(echo "$response" | jq 'length')
+        if [ "$count" -eq 0 ]; then
+            break
+        fi
+
+        all_results=$(jq -s '.[0] + .[1]' \
+            <(echo "$all_results") <(echo "$response"))
+
+        page=$((page + 1))
+    done
+
+    echo "$all_results"
+}
+
+# Get all users
+echo -e "${BLUE}Fetching users from KnowBe4...${NC}"
+users_response=$(make_paginated_api_call "users")
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Error: Failed to fetch users${NC}" >&2
+    exit 1
+fi
+
+# Get all training enrollments
+echo -e "${BLUE}Fetching training enrollments...${NC}"
+enrollments_response=$(make_paginated_api_call "training/enrollments?exclude_archived_users=true&include_campaign_id=true")
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Error: Failed to fetch enrollments${NC}" >&2
+    exit 1
+fi
+
+# Filter enrollments to Initial Security Awareness Training only
+security_awareness_enrollments=$(echo "$enrollments_response" | jq -c \
+  --arg campaign "$SECURITY_AWARENESS_CAMPAIGN" \
+  '[.[] | select(.campaign_name == $campaign)]')
+
+# Process each user
+echo "$users_response" | jq -c '.[] | select(.status == "active")' | while read -r user; do
+    user_id=$(echo "$user" | jq -r '.id')
+    user_email=$(echo "$user" | jq -r '.email')
+    
+    # Add minimal user info to users array (excluding policy_acknowledged)
+    minimal_user=$(echo "$user" | jq '{id: .id, email: .email, status: .status}')
+    jq --argjson user "$minimal_user" '.results.users += [$user]' "$UNIQUE_JSON" > tmp.json && mv tmp.json "$UNIQUE_JSON"
+    
+    # Get user's enrollments for this campaign
+    user_enrollments=$(echo "$security_awareness_enrollments" | jq -c \
+        --arg user_id "$user_id" \
+        '[.[] | select(.user.id == ($user_id|tonumber))]')
+
+    # Initialize user's training status
+    user_status="not_started"
+    needs_retraining=false
+
+    if echo "$user_enrollments" | jq -e 'type=="array" and length > 0' >/dev/null; then
+
+        # Add enrollments to results
+        while read -r enrollment; do
+            jq --argjson enrollment "$enrollment" \
+            '.results.enrollments += [$enrollment]' \
+            "$UNIQUE_JSON" > tmp.json && mv tmp.json "$UNIQUE_JSON"
+        done < <(echo "$user_enrollments" | jq -c '.[]')
+
+        # Find most recent Passed completion
+        latest_passed_date=$(echo "$user_enrollments" | jq -r '
+        [ .[] | select(.status == "Passed") | .completion_date ]
+        | max // empty
+        ')
+
+        if [ -n "$latest_passed_date" ]; then
+            user_status="completed"
+
+            completed_epoch=$(date -d "$latest_passed_date" +%s 2>/dev/null)
+            if [ -n "$completed_epoch" ] && [ "$completed_epoch" -lt "$ONE_YEAR_AGO" ]; then
+                needs_retraining=true
+            fi
+
+        elif echo "$user_enrollments" | jq -e 'any(.status == "In Progress")' >/dev/null; then
+            user_status="in_progress"
+
+        elif echo "$user_enrollments" | jq -e 'any(.status == "Past Due")' >/dev/null; then
+            user_status="past_due"
+        fi
+    fi
+
+
+
+    # Update user's training status
+    jq --arg email "$user_email" \
+        --arg status "$user_status" \
+        --argjson retrain "$needs_retraining" \
+        '
+        .results.user_training_status[$email] = $status |
+        .results.user_retraining_required[$email] = $retrain
+        ' "$UNIQUE_JSON" > tmp.json && mv tmp.json "$UNIQUE_JSON" 
+
+done
+
+# Calculate summary statistics
+total_users=$(jq '.results.users | length' "$UNIQUE_JSON")
+completed_training=$(jq '.results.user_training_status | to_entries | map(select(.value == "completed")) | length' "$UNIQUE_JSON")
+in_progress=$(jq '.results.user_training_status | to_entries | map(select(.value == "in_progress")) | length' "$UNIQUE_JSON")
+past_due=$(jq '.results.user_training_status | to_entries | map(select(.value == "past_due")) | length' "$UNIQUE_JSON")
+not_started=$(jq '.results.user_training_status | to_entries | map(select(.value == "not_started")) | length' "$UNIQUE_JSON")
+needs_retraining=$(jq '.results.user_retraining_required | to_entries | map(select(.value == true)) | length' "$UNIQUE_JSON")
+completion_rate=0
+if [ "$total_users" -gt 0 ]; then
+    completion_rate=$((completed_training * 100 / total_users))
+fi
+
+# Update summary in JSON
+jq --arg total "$total_users" \
+   --arg completed "$completed_training" \
+   --arg in_progress "$in_progress" \
+   --arg past_due "$past_due" \
+   --arg not_started "$not_started" \
+   --arg needs_retraining "$needs_retraining" \
+   --arg rate "$completion_rate" \
+   '.results.summary = {
+       "total_users": ($total|tonumber),
+       "completed_training": ($completed|tonumber),
+       "in_progress": ($in_progress|tonumber),
+       "past_due": ($past_due|tonumber),
+       "not_started": ($not_started|tonumber),
+       "needs_retraining": ($needs_retraining|tonumber),
+       "completion_rate": ($rate|tonumber)
+   }' "$UNIQUE_JSON" > tmp.json && mv tmp.json "$UNIQUE_JSON"
+
+# Generate summary
+echo -e "\n${GREEN}Validation Summary:${NC}"
+echo -e "Total Active Users: $total_users"
+echo -e "Completed Training: $completed_training"
+echo -e "In Progress: $in_progress"
+echo -e "Past Due: $past_due"
+echo -e "Not Started: $not_started"
+echo -e "Needs Retraining (>1 year): $needs_retraining"
+echo -e "Completion Rate: ${completion_rate}%"
+
+exit 0
